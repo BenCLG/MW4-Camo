@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MW4 · Camo Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme:light;
+  --bg:#f4f2ee; --surface:#ffffff; --surface2:#f0ede7; --text:#1b1a17; --muted:#6d6a62; --line:#e3dfd6; --off:#e4e0d7;
+  --accent:#e8590c; --p1:#0b7285; --p2:#c2255c;
+  --gold:#e0a800; --plat:#8396ad; --hb:#14a38f; --div:#6741d9; --ok:#2f9e44; --bad:#e03131;
+  --ink-on:#14130f;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0e1116; --surface:#161a22; --surface2:#1c212b; --text:#eceff4; --muted:#8b93a3; --line:#262c38; --off:#2a303c;
+    --accent:#ff7a2f; --p1:#2ec4d6; --p2:#ff5d8f;
+    --gold:#f5b800; --plat:#b6c4d8; --hb:#2dd4bf; --div:#8b6cf0; --ok:#51cf66; --bad:#ff6b6b;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0e1116; --surface:#161a22; --surface2:#1c212b; --text:#eceff4; --muted:#8b93a3; --line:#262c38; --off:#2a303c;
+  --accent:#ff7a2f; --p1:#2ec4d6; --p2:#ff5d8f;
+  --gold:#f5b800; --plat:#b6c4d8; --hb:#2dd4bf; --div:#8b6cf0; --ok:#51cf66; --bad:#ff6b6b;
+}
+html{background:var(--bg);scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none;padding:0;text-align:inherit}
+.wrap{max-width:1240px;margin:0 auto;padding:30px 20px 70px}
+
+.top{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:22px}
+h1{margin:0;font-family:"Barlow Condensed","Arial Narrow",Impact,sans-serif;font-weight:700;font-size:44px;line-height:1;letter-spacing:.02em;text-transform:uppercase}
+h1 span{color:var(--accent)}
+.sub{margin:6px 0 0;color:var(--muted)}
+.status{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);background:var(--surface);border:1px solid var(--line);padding:6px 12px;border-radius:999px}
+.status i{width:8px;height:8px;border-radius:50%;background:var(--muted)}
+.status.live i{background:var(--ok);box-shadow:0 0 0 4px color-mix(in srgb,var(--ok) 22%,transparent)}
+.status.err i{background:var(--bad)}
+.banner{background:color-mix(in srgb,var(--gold) 16%,var(--surface));border:1px solid color-mix(in srgb,var(--gold) 45%,var(--line));padding:10px 14px;border-radius:12px;margin-bottom:16px;font-size:14px}
+
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:14px;margin-bottom:8px}
+.stat{background:var(--surface);border:2px solid var(--line);border-radius:18px;padding:18px 20px;position:relative;overflow:hidden;cursor:pointer;transition:border-color .2s}
+.stat::before{content:"";position:absolute;inset:0 0 auto 0;height:3px;background:var(--pc)}
+.stat.on{border-color:var(--pc)}
+.stat:hover{border-color:color-mix(in srgb,var(--pc) 60%,var(--line))}
+.sname{display:flex;align-items:center;gap:8px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-size:12px}
+.sname i{width:9px;height:9px;border-radius:50%;background:var(--pc);display:inline-block}
+.sname em{margin-left:auto;font-style:normal;font-size:11px;letter-spacing:.06em;color:var(--bg);background:var(--pc);padding:2px 9px;border-radius:99px}
+.big{font-family:"Barlow Condensed","Arial Narrow",Impact,sans-serif;font-weight:700;font-size:64px;line-height:1;margin:8px 0 10px}
+.big small{font-size:28px;color:var(--muted);margin-left:2px}
+.bar{height:5px;background:var(--off);border-radius:99px;overflow:hidden}
+.bar span{display:block;height:100%;background:var(--pc);border-radius:99px;transition:width .35s ease}
+.minis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}
+.mini{border-radius:10px;background:var(--surface2);padding:8px 10px;border-left:3px solid var(--c)}
+.mini b{font-family:"Barlow Condensed","Arial Narrow",Impact,sans-serif;font-size:22px;line-height:1;display:block}
+.mini span{font-size:11px;color:var(--muted)}
+.g{--c:var(--gold)} .p{--c:var(--plat)} .h{--c:var(--hb)} .d{--c:var(--div)} .s{--c:var(--muted)}
+.hint{margin:0 0 20px;font-size:13px;color:var(--muted)}
+
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px}
+.toolbar input[type=search]{flex:1 1 200px;min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 14px;outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--accent)!important}
+select{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px;outline:none}
+.btn{background:var(--accent);color:#fff;font-weight:600;padding:10px 16px;border-radius:12px;text-align:center}
+.btn.ghost{background:var(--surface);color:var(--text);border:1px solid var(--line)}
+.btn.ghost.on{background:var(--text);color:var(--bg);border-color:var(--text)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+.cc{padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--surface);font-size:13px;font-weight:500;color:var(--muted)}
+.cc b{font-weight:600;margin-left:4px;color:var(--text);opacity:.7}
+.cc.on{background:var(--text);color:var(--bg);border-color:var(--text)}
+.cc.on b{color:var(--bg)}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:18px;display:grid;gap:10px}
+.panel .r{display:flex;gap:10px;flex-wrap:wrap}
+.panel textarea{width:100%;min-height:80px;resize:vertical;background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:10px 12px;outline:none}
+.panel p{margin:0;font-size:13px;color:var(--muted)}
+
+/* sections par classe */
+.sec{margin-bottom:30px}
+.sechead{display:flex;align-items:baseline;gap:14px;margin:0 0 10px}
+.sechead h2{margin:0;font-family:"Barlow Condensed","Arial Narrow",Impact,sans-serif;font-weight:700;font-size:28px;letter-spacing:.03em;text-transform:uppercase}
+.sechead span{color:var(--muted);font-size:13px}
+.whead,.wrow,.defgrid{display:grid;grid-template-columns:minmax(130px,.9fr) repeat(var(--ncols,6),minmax(0,1fr));gap:6px}
+.whead{margin-bottom:6px}
+.hd{font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;text-align:center;padding:7px 4px;border-radius:8px;background:var(--off);color:var(--muted)}
+.hd.g{background:var(--gold);color:var(--ink-on)}
+.hd.p{background:var(--plat);color:var(--ink-on)}
+.hd.h{background:var(--hb);color:var(--ink-on)}
+.hd.d{background:var(--div);color:#fff}
+.wrow{margin-bottom:6px;align-items:stretch}
+.wname{display:flex;justify-content:space-between;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.wname b{display:block;font-family:"Barlow Condensed","Arial Narrow",Impact,sans-serif;font-weight:700;font-size:21px;line-height:1.05;letter-spacing:.02em;text-transform:uppercase}
+.wname span{font-size:12px;color:var(--muted);font-weight:600}
+.wrow.full .wname{background:var(--div);border-color:var(--div);color:#fff}
+.wrow.full .wname span{color:#fff;opacity:.85}
+.cell{position:relative;min-height:66px;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:9px 10px;font-size:12.5px;line-height:1.3;display:block;width:100%;transition:background .15s,border-color .15s,transform .1s}
+.cell::before{content:attr(data-label);display:none;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+button.cell:hover{border-color:var(--ok)}
+button.cell:active{transform:scale(.97)}
+.cell.on{background:color-mix(in srgb,var(--ok) 24%,var(--surface));border-color:var(--ok)}
+.cell em{color:var(--muted);font-style:normal;opacity:.75}
+.ck{position:absolute;right:7px;top:5px;font-size:13px;font-weight:700;color:var(--ok);text-decoration:none}
+.ot{position:absolute;right:7px;bottom:6px;width:18px;height:18px;border-radius:50%;background:var(--oc);color:var(--bg);font-size:10px;font-weight:700;font-style:normal;display:flex;align-items:center;justify-content:center}
+.cell.edit{border-style:dashed;cursor:text}
+.cell.edit:hover{border-color:var(--accent)}
+.cin,.din{width:100%;background:var(--surface2);border:1px solid var(--accent);border-radius:8px;padding:6px 8px;outline:none;font-size:12.5px}
+.defs{background:var(--surface);border:1px dashed var(--accent);border-radius:14px;padding:12px;margin-bottom:8px}
+.defs p{margin:0 0 8px;font-size:12.5px;color:var(--muted)}
+.defgrid{grid-template-columns:repeat(var(--ncols,6),minmax(0,1fr))}
+.defgrid label{display:block;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+.defgrid .din{border-color:var(--line)}
+.x{height:28px;min-width:28px;border-radius:8px;color:var(--muted);font-size:13px;text-align:center}
+.x:hover{background:var(--surface2)}
+.x.arm{background:var(--bad);color:#fff;padding:0 10px;font-weight:600}
+.wrow.full .x{color:#fff}
+.empty{text-align:center;padding:60px 20px;color:var(--muted);background:var(--surface);border:1px dashed var(--line);border-radius:18px}
+.empty h3{margin:0 0 6px;font-family:"Barlow Condensed","Arial Narrow",Impact,sans-serif;font-size:28px;color:var(--text);text-transform:uppercase}
+.foot{margin-top:26px;color:var(--muted);font-size:12.5px;max-width:780px}
+.toast{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--text);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:14px;box-shadow:0 8px 30px rgba(0,0,0,.25);z-index:20}
+.ro .cell,.ro .x{pointer-events:none}
+
+@media (max-width:1020px){
+  .whead{display:none}
+  .wrow{grid-template-columns:1fr 1fr;background:var(--surface2);padding:8px;border-radius:16px;margin-bottom:12px}
+  .wname{grid-column:1/-1}
+  .cell::before{display:block}
+  .defgrid{grid-template-columns:1fr 1fr}
+}
+@media (max-width:460px){
+  h1{font-size:36px}
+  .wrow{grid-template-columns:1fr}
+  .defgrid{grid-template-columns:1fr}
+  .minis{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+<div class="wrap" id="app">
+  <header class="top">
+    <div>
+      <h1 id="title">MW4 <span>Camo Tracker</span></h1>
+      <p class="sub">Tes coches sont sauvegardées dans ce navigateur. Exporte-les pour les partager ou les changer d’appareil.</p>
+    </div>
+    <div class="status live" id="status"><i></i><span>Sauvegarde locale</span></div>
+  </header>
+
+  <section id="stats" class="stats"></section>
+  <p class="hint">Clique sur un joueur pour ouvrir sa feuille. La pastille de couleur dans une case montre que l’autre joueur l’a déjà complétée (après un import de son fichier).</p>
+
+  <section class="toolbar">
+    <input id="q" type="search" placeholder="Chercher une arme…" autocomplete="off">
+    <button class="btn ghost" data-act="export">⬇ Exporter</button>
+    <button class="btn ghost" data-act="import">⬆ Importer</button>
+    <input id="file" type="file" accept="application/json,.json" hidden>
+  </section>
+
+  <div id="chips" class="chips"></div>
+  <main id="grid"></main>
+  <p class="foot" id="foot"></p>
+</div>
+<div id="toast" class="toast" hidden></div>
+
+<script>
+(function(){
+  var DATA_URL="data.json";
+  var KEY="mw4_progress_v1", MEKEY="mw4_me";
+  var COLORS=["--p1","--p2"];
+
+  var DATA=null, players=[], classes=[], steps=[], weapons=[], PER=0, DIV_AT=33;
+  var progress={}, me="", filterCls="all", q="", toastTimer=null;
+
+  function $(s){return document.querySelector(s);}
+  function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c];});}
+  function toast(msg){var t=$("#toast");t.textContent=msg;t.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(function(){t.hidden=true;},3200);}
+
+  /* ---------- stockage local ---------- */
+  function loadProgress(){
+    try{var v=JSON.parse(localStorage.getItem(KEY)||"{}");progress=(v&&typeof v==="object")?v:{};}catch(e){progress={};}
+  }
+  function saveProgress(){
+    try{localStorage.setItem(KEY,JSON.stringify(progress));}
+    catch(e){toast("Impossible de sauvegarder dans ce navigateur.");}
+  }
+  function pv(wid,pid){return (progress[wid]&&progress[wid][pid])||{};}
+  function score(v){var n=0;steps.forEach(function(s){if(v[s.key])n++;});return n;}
+  function player(id){return players.filter(function(p){return p.id===id;})[0];}
+  function pcolor(id){var i=players.indexOf(player(id));return COLORS[i<0?0:i%COLORS.length];}
+  function other(){return players.filter(function(p){return p.id!==me;})[0]||players[0];}
+  function eff(w,k){
+    var c=null;for(var i=0;i<classes.length;i++){if(classes[i].id===w.cls)c=classes[i];}
+    return (w.challenges&&w.challenges[k])||(c&&c.defaults&&c.defaults[k])||"";
+  }
+
+  /* ---------- rendu ---------- */
+  function renderStats(){
+    var n=weapons.length;
+    $("#stats").innerHTML=players.map(function(p){
+      var done=0,c={};
+      weapons.forEach(function(w){
+        var v=pv(w.id,p.id);done+=score(v);
+        steps.forEach(function(s){if(v[s.key])c[s.key]=(c[s.key]||0)+1;});
+      });
+      var tot=n*PER,pct=tot?Math.round(done/tot*100):0;
+      var minis=steps.filter(function(s){return s.type!=="s";}).map(function(s){
+        return '<div class="mini '+s.type+'"><b>'+(c[s.key]||0)+'</b><span>/'+n+' '+esc(s.label.replace("Harmonic Break","H. Break"))+'</span></div>';
+      }).join("");
+      var hb=c.h||0;
+      minis+='<div class="mini d"><b>'+(hb>=DIV_AT?"✓":hb+"/"+DIV_AT)+'</b><span>Divergence</span></div>';
+      var on=p.id===me;
+      return '<div class="stat'+(on?' on':'')+'" role="button" tabindex="0" data-act="player" data-p="'+esc(p.id)+'" style="--pc:var('+pcolor(p.id)+')">'+
+        '<div class="sname"><i></i>'+esc(p.name)+(on?'<em>Feuille ouverte</em>':'')+'</div>'+
+        '<div class="big">'+pct+'<small>%</small></div>'+
+        '<div class="bar"><span style="width:'+pct+'%"></span></div>'+
+        '<div class="minis">'+minis+'</div></div>';
+    }).join("");
+  }
+
+  function renderChips(){
+    var counts={};weapons.forEach(function(w){counts[w.cls]=(counts[w.cls]||0)+1;});
+    var html='<button class="cc'+(filterCls==="all"?" on":"")+'" data-act="cls" data-c="all">Toutes<b>'+weapons.length+'</b></button>';
+    classes.forEach(function(c){
+      if(counts[c.id])html+='<button class="cc'+(filterCls===c.id?" on":"")+'" data-act="cls" data-c="'+esc(c.id)+'">'+esc(c.name)+'<b>'+counts[c.id]+'</b></button>';
+    });
+    $("#chips").innerHTML=html;
+  }
+
+  function cellHtml(w,s,v){
+    var k=s.key,on=!!v[k],txt=eff(w,k),o=other(),ov=o&&o.id!==me&&!!pv(w.id,o.id)[k];
+    return '<button class="cell'+(on?' on':'')+'" data-act="tog" data-w="'+esc(w.id)+'" data-k="'+esc(k)+'" data-label="'+esc(s.label)+'" aria-pressed="'+on+'">'+
+      (txt?esc(txt):'<em>Défi à définir</em>')+
+      (on?'<u class="ck">✓</u>':'')+
+      (ov?'<i class="ot" style="--oc:var('+pcolor(o.id)+')" title="'+esc(o.name)+' l’a complétée">'+esc(o.name.charAt(0))+'</i>':'')+
+      '</button>';
+  }
+
+  function rowHtml(w){
+    var v=pv(w.id,me),sc=score(v);
+    return '<div class="wrow'+(sc===PER?' full':'')+'" style="--pc:var('+pcolor(me)+')">'+
+      '<div class="wname"><div><b>'+esc(w.name)+'</b><span>'+sc+'/'+PER+'</span></div></div>'+
+      steps.map(function(s){return cellHtml(w,s,v);}).join("")+'</div>';
+  }
+
+  function renderGrid(){
+    var needle=q.trim().toLowerCase();
+    var list=weapons.filter(function(w){
+      return (filterCls==="all"||w.cls===filterCls)&&(!needle||String(w.name).toLowerCase().indexOf(needle)>-1);
+    });
+    var g=$("#grid");
+    if(!list.length){g.innerHTML='<div class="empty"><h3>Aucun résultat</h3>Essaie un autre filtre ou une autre recherche.</div>';return;}
+    var html="";
+    classes.forEach(function(c){
+      var ws=list.filter(function(w){return w.cls===c.id;});
+      if(!ws.length)return;
+      var done=ws.filter(function(w){return score(pv(w.id,me))===PER;}).length;
+      html+='<section class="sec"><div class="sechead"><h2>'+esc(c.name)+'</h2><span>'+done+'/'+ws.length+' complétée'+(done>1?'s':'')+' · feuille de '+esc(player(me).name)+'</span></div>'+
+        '<div class="whead"><div></div>'+steps.map(function(s){return '<div class="hd '+esc(s.type)+'">'+esc(s.label)+'</div>';}).join("")+'</div>'+
+        ws.map(rowHtml).join("")+'</section>';
+    });
+    g.innerHTML=html;
+  }
+  function renderAll(){renderStats();renderChips();renderGrid();}
+
+  /* ---------- export / import ---------- */
+  function exportProgress(){
+    var blob=new Blob([JSON.stringify({version:1,exportedAt:new Date().toISOString(),progress:progress},null,1)],{type:"application/json"});
+    var a=document.createElement("a");
+    a.href=URL.createObjectURL(blob);a.download="mw4-progression.json";
+    document.body.appendChild(a);a.click();a.remove();
+    setTimeout(function(){URL.revokeObjectURL(a.href);},1000);
+  }
+  function importProgress(file){
+    var r=new FileReader();
+    r.onload=function(){
+      try{
+        var d=JSON.parse(r.result),inc=d.progress||d,added=0;
+        Object.keys(inc).forEach(function(wid){
+          Object.keys(inc[wid]||{}).forEach(function(pid){
+            Object.keys(inc[wid][pid]||{}).forEach(function(k){
+              if(inc[wid][pid][k]===true&&!pv(wid,pid)[k]){
+                progress[wid]=progress[wid]||{};progress[wid][pid]=progress[wid][pid]||{};
+                progress[wid][pid][k]=true;added++;
+              }
+            });
+          });
+        });
+        saveProgress();renderAll();
+        toast(added?added+" coche"+(added>1?"s":"")+" ajoutée"+(added>1?"s":""):"Rien de nouveau dans ce fichier.");
+      }catch(e){toast("Fichier invalide.");}
+    };
+    r.readAsText(file);
+  }
+
+  /* ---------- événements ---------- */
+  document.addEventListener("click",function(e){
+    var t=e.target.closest("[data-act]");if(!t)return;
+    var a=t.dataset.act;
+    if(a==="tog"){
+      var w=t.dataset.w,k=t.dataset.k,cur=!!pv(w,me)[k];
+      progress[w]=progress[w]||{};progress[w][me]=Object.assign({},progress[w][me]||{});progress[w][me][k]=!cur;
+      saveProgress();renderStats();renderGrid();
+    }else if(a==="player"){
+      me=t.dataset.p;try{localStorage.setItem(MEKEY,me);}catch(x){}renderAll();
+    }else if(a==="cls"){filterCls=t.dataset.c;renderChips();renderGrid();}
+    else if(a==="export"){exportProgress();}
+    else if(a==="import"){$("#file").click();}
+  });
+  document.addEventListener("keydown",function(e){
+    var t=e.target;
+    if((e.key==="Enter"||e.key===" ")&&t.dataset&&t.dataset.act==="player"){e.preventDefault();t.click();}
+  });
+  $("#file").addEventListener("change",function(e){if(e.target.files[0])importProgress(e.target.files[0]);e.target.value="";});
+  $("#q").addEventListener("input",function(e){q=e.target.value;renderGrid();});
+
+  /* ---------- démarrage ---------- */
+  fetch(DATA_URL,{cache:"no-store"}).then(function(r){
+    if(!r.ok)throw new Error("HTTP "+r.status);return r.json();
+  }).then(function(d){
+    DATA=d;players=d.players;classes=d.classes;steps=d.steps;weapons=d.weapons;PER=steps.length;DIV_AT=d.divergenceAt||33;
+    document.documentElement.style.setProperty("--ncols",steps.length);
+    if(d.title)document.title=d.title;
+    $("#foot").textContent="Défis : version multijoueur (sources : CODMunity et MW4.GG). Les camos militaires viennent du niveau d’arme et ne sont pas suivis ici. La Divergence se débloque automatiquement après "+DIV_AT+" Harmonic Break.";
+    loadProgress();
+    try{me=localStorage.getItem(MEKEY)||"";}catch(e){}
+    if(!player(me))me=players[0].id;
+    renderAll();
+  }).catch(function(){
+    $("#grid").innerHTML='<div class="empty"><h3>data.json introuvable</h3>Ouvre la page depuis un serveur (hébergement, ou <code>python -m http.server</code> en local). Un double-clic sur le fichier ne marche pas, le navigateur bloque la lecture de data.json.</div>';
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,462 @@
+{
+ "_readme": "Source de vérité du site. Modifie ce fichier pour changer les armes et les défis. 'challenges' d’une arme remplace le défaut de sa classe (ex: les 3 camos spéciaux s1/s2/s3). Les coches ne sont PAS ici: elles sont dans le navigateur de chaque joueur. Les défis marqués [DMZ] n’ont pas (encore) de version multijoueur dans la source (mw4.gg). Source : api.mw4.gg/api/v2/camo-grind.",
+ "title": "MW4 Camo Tracker",
+ "divergenceAt": 33,
+ "players": [
+  {
+   "id": "benjamin",
+   "name": "Benjamin"
+  },
+  {
+   "id": "sam",
+   "name": "Sam"
+  }
+ ],
+ "steps": [
+  {
+   "key": "s1",
+   "label": "Spécial 1",
+   "type": "s"
+  },
+  {
+   "key": "s2",
+   "label": "Spécial 2",
+   "type": "s"
+  },
+  {
+   "key": "s3",
+   "label": "Spécial 3",
+   "type": "s"
+  },
+  {
+   "key": "g",
+   "label": "Gold",
+   "type": "g"
+  },
+  {
+   "key": "p",
+   "label": "Platine",
+   "type": "p"
+  },
+  {
+   "key": "h",
+   "label": "Harmonic Break",
+   "type": "h"
+  }
+ ],
+ "classes": [
+  {
+   "id": "ar",
+   "name": "Assault Riffles",
+   "defaults": {
+    "g": "Get 15 Player Kills in a single match",
+    "p": "Get 50 Headshots against Players",
+    "h": "Get 25 Double Kills against Players"
+   }
+  },
+  {
+   "id": "smg",
+   "name": "SMG",
+   "defaults": {
+    "g": "Get 15 Player Kills in a single match",
+    "p": "Get 25 Player Kills from Behind",
+    "h": "Get 50 Hipfire Kills against Players"
+   }
+  },
+  {
+   "id": "sg",
+   "name": "Shotguns",
+   "defaults": {
+    "g": "Get 15 Player Kills in a single match",
+    "p": "Get 125 Hipfire Kills against Players",
+    "h": "Get 2 Player Kills without Reloading 25 times"
+   }
+  },
+  {
+   "id": "lmg",
+   "name": "LMG",
+   "defaults": {
+    "g": "Get 15 Player Kills in a single match",
+    "p": "Get 3 Player Kills without dying 15 times",
+    "h": "Get 2 Player Kills without releasing the trigger 25 times"
+   }
+  },
+  {
+   "id": "mr",
+   "name": "Marksman",
+   "defaults": {
+    "g": "Get 15 Player Kills in a single match",
+    "p": "Get 75 Player Kills while Prone",
+    "h": "Get 75 One Shot Kills against Players"
+   }
+  },
+  {
+   "id": "sn",
+   "name": "Snipers",
+   "defaults": {
+    "g": "Get 15 Player Kills in a single match",
+    "p": "Get 75 Player Kills while Prone",
+    "h": "Get 75 One Shot Kills against Players"
+   }
+  },
+  {
+   "id": "pi",
+   "name": "Pistolets",
+   "defaults": {
+    "g": "Get 15 Player Kills in a single match",
+    "p": "Get 20 Player Kills from Behind",
+    "h": "Get 40 Hipfire Kills against Players"
+   }
+  },
+  {
+   "id": "la",
+   "name": "Launchers",
+   "defaults": {
+    "g": "Get 15 Player Kills in a single match",
+    "p": "Get 2 Player Kills without taking Damage 15 times",
+    "h": "Get 10 Player Kills in a match 7 times"
+   }
+  },
+  {
+   "id": "me",
+   "name": "Melee",
+   "defaults": {
+    "g": "Get 15 Player Kills in a single match",
+    "p": "Get 3 Kills without Dying 15 times against Players",
+    "h": "Get 25 Player Kills from Behind"
+   }
+  }
+ ],
+ "weapons": [
+  {
+   "id": "ar-han-86",
+   "name": "Han 86",
+   "cls": "ar",
+   "challenges": {
+    "s1": "Smoke — Get 20 Kills while Mounted against Players",
+    "s2": "Stormwave — Get 50 Player Kills while using a silencer",
+    "s3": "Red — Get 3 Player Kills without dying 15 times"
+   }
+  },
+  {
+   "id": "ar-m4",
+   "name": "M4",
+   "cls": "ar",
+   "challenges": {
+    "s1": "Myriad — Get 20 Point Blank Kills against Players",
+    "s2": "Green — Get 25 Kills from behind Players",
+    "s3": "Night Ops — Get 20 Mounted Kills against Players"
+   }
+  },
+  {
+   "id": "ar-hyeon-burst",
+   "name": "Hyeon Burst",
+   "cls": "ar",
+   "challenges": {
+    "s1": "Ponderosa — Get 2 Kills without Reloading 10 times against Players",
+    "s2": "Red Rain — Get 20 Longshot Kills against Players",
+    "s3": "Kitty Kaos — Get 100 Kills against Players using Full Auto"
+   }
+  },
+  {
+   "id": "ar-patriot-xmr",
+   "name": "Patriot XMR",
+   "cls": "ar",
+   "challenges": {
+    "s1": "Dune Sea — Get 20 Hipfire Kills against Players",
+    "s2": "Scorch — Get 50 Player Kills using a Silencer",
+    "s3": "Disperse — Get 30 Longshot Kills against Players"
+   }
+  },
+  {
+   "id": "ar-kastov-762",
+   "name": "Kastov 762",
+   "cls": "ar",
+   "challenges": {
+    "s1": "Samnim — Get 3 Kills without dying 10 times",
+    "s2": "Raster Aux — Get 20 Longshot Kills against Players",
+    "s3": "Yellow — Get 30 Hipfire Kills against Players"
+   }
+  },
+  {
+   "id": "ar-oden",
+   "name": "Oden",
+   "cls": "ar",
+   "challenges": {
+    "s1": "Dark Moss — Get 25 Player Kills with Miri 40MM Grenade Launcher",
+    "s2": "Shale — Get 2 Kills without Reloading 10 times against Players",
+    "s3": "Hot Rod — Get 100 Kills while ADS against Players"
+   }
+  },
+  {
+   "id": "ar-axion",
+   "name": "AXION",
+   "cls": "ar",
+   "challenges": {
+    "s1": "Splinter Rock — Get 20 Longshot Kills against Players",
+    "s2": "Sunset Tropic — Get 25 Player Kills with Miri 40MM Grenade Launcher",
+    "s3": "Cyan — Get 2 Kills without Reloading 25 times against Players"
+   }
+  },
+  {
+   "id": "ar-cronen-squall",
+   "name": "CRONEN SQUALL",
+   "cls": "ar",
+   "challenges": {
+    "s1": "Oni — Get 20 Point Blank Kills against Players",
+    "s2": "Urban Smoke — Get 20 Mounted Kills against Players",
+    "s3": "Optical Reverb — Get 3 Kills without Dying 15 times against Players"
+   }
+  },
+  {
+   "id": "smg-iso-nightshade",
+   "name": "ISO Nightshade",
+   "cls": "smg",
+   "challenges": {
+    "s1": "Asphalt — Get 50 Player Kills while Aiming Down Sights",
+    "s2": "Black Topo — Get 10 Double Kills against Players",
+    "s3": "Brown — Get 3 Player Kills without Dying 15 times"
+   }
+  },
+  {
+   "id": "smg-vel-46",
+   "name": "VEL 46",
+   "cls": "smg",
+   "challenges": {
+    "s1": "Jungle Shadow — Get 20 Enemy Kills while Prone",
+    "s2": "Ghast — Get 20 Player Kills while Prone",
+    "s3": "Gunmetal — Get 20 Headshots against Players"
+   }
+  },
+  {
+   "id": "smg-wz-55-striga",
+   "name": "WZ.55 STRIGA",
+   "cls": "smg",
+   "challenges": {
+    "s1": "Stellation — Get 50 Player Kills using a Silencer",
+    "s2": "Rattlesnake — Get 20 Player Kills while Jumping",
+    "s3": "Dark Tan — Get 40 Point Blank Kills against Players"
+   }
+  },
+  {
+   "id": "smg-ppsh-41",
+   "name": "PPSH-41",
+   "cls": "smg",
+   "challenges": {
+    "s1": "Blackwell — Get 10 Double Kills against Players",
+    "s2": "Iron — Get 20 Longshot Kills against Players",
+    "s3": "Currents — Get 100 Player Kills while Aiming Down Sights"
+   }
+  },
+  {
+   "id": "smg-x-58-nyx",
+   "name": "X-58 NYX",
+   "cls": "smg",
+   "challenges": {
+    "s1": "Sniper Veil — Get 20 Player Kills while Moving",
+    "s2": "Carbonated — Get 20 Longshot Kills against Players",
+    "s3": "Lime — Get 40 Headshot Kills against Players"
+   }
+  },
+  {
+   "id": "sg-rezi-12",
+   "name": "Rezi 12",
+   "cls": "sg",
+   "challenges": {
+    "s1": "Struck Oil — Get 20 Point Blank Kills against Players",
+    "s2": "Brushstroke — Get 10 Longshot Kills against Players",
+    "s3": "White Pine — Get 40 Player Kills while Jumping"
+   }
+  },
+  {
+   "id": "sg-warlord",
+   "name": "WARLORD",
+   "cls": "sg",
+   "challenges": {
+    "s1": "Redshift — Get 20 Player Kills while Moving",
+    "s2": "Corrupted Clay — Get 10 Double Kills against Players",
+    "s3": "Magma Ire — Get 50 Player Kills while Prone"
+   }
+  },
+  {
+   "id": "lmg-type-73",
+   "name": "TYPE 73",
+   "cls": "lmg",
+   "challenges": {
+    "s1": "Ash Pine — Get 20 Mounted Kills against Players",
+    "s2": "Mineral — Get 10 Double Kills against Players",
+    "s3": "Tiger Swipe — Get 40 Headshots against Players"
+   }
+  },
+  {
+   "id": "lmg-finn-lmg",
+   "name": "FINN LMG",
+   "cls": "lmg",
+   "challenges": {
+    "s1": "Desert Tactics — Get 20 Point Blank Kills against Players",
+    "s2": "Green Tiger — Get 2 Kills without Reloading 10 times against Players",
+    "s3": "Thunderhead — Get 100 Longshot Kills against Enemies [DMZ]"
+   }
+  },
+  {
+   "id": "lmg-apoc-338",
+   "name": "APOC 338",
+   "cls": "lmg",
+   "challenges": {
+    "s1": "Phantom Flux — Get 20 Hipfire Kills against Players",
+    "s2": "Mineral — Get 20 Longshot Kills against Players",
+    "s3": "Tiger Swipe — Get 100 Player Kills while Prone"
+   }
+  },
+  {
+   "id": "mr-mar-9",
+   "name": "MAR-9",
+   "cls": "mr",
+   "challenges": {
+    "s1": "Mangrove — Get 20 Mounted Kills against Players",
+    "s2": "Fungal Grid — Get 25 Player Kills while Crouched",
+    "s3": "White — Get 30 Longshot Kills against Players"
+   }
+  },
+  {
+   "id": "mr-oris-8-6",
+   "name": "Oris 8.6",
+   "cls": "mr",
+   "challenges": {
+    "s1": "Hibiscus — Get 10 Quickscope Kills against Players",
+    "s2": "Fire Topo — Get 20 Double Kills against Players",
+    "s3": "Deep Space — Get 3 Kills without Dying against Players 15 times"
+   }
+  },
+  {
+   "id": "mr-moisin-nagant",
+   "name": "MOISIN NAGANT",
+   "cls": "mr",
+   "challenges": {
+    "s1": "Ice Sheer — Get 25 Headshots against Players",
+    "s2": "Fractal Snow — Get 3 Player Kills without Dying 15 times",
+    "s3": "Sticker Shock — Get 20 Headshots against Players"
+   }
+  },
+  {
+   "id": "sn-signal-50",
+   "name": "SIGNAL 50",
+   "cls": "sn",
+   "challenges": {
+    "s1": "Anaconda — Get 2 Player Kills within 5 Seconds 10 times",
+    "s2": "Ripplewave — Get 20 Quickscope Kills against Players",
+    "s3": "Sunburn — Get 40 Longshot Kills against Players"
+   }
+  },
+  {
+   "id": "sn-kg-7-vulcan",
+   "name": "KG-7 VULCAN",
+   "cls": "sn",
+   "challenges": {
+    "s1": "Treeline — Get 10 Hipfire Kills against Players",
+    "s2": "Spidersilk — Get 20 Headshot Kills against Players",
+    "s3": "Tension — Get 2 Player Kills without taking damage 20 times"
+   }
+  },
+  {
+   "id": "sn-astaroth-57",
+   "name": "ASTAROTH .57",
+   "cls": "sn",
+   "challenges": {
+    "s1": "Dry Brush — Get 3 Player Kills without Dying 10 times",
+    "s2": "Backcountry — Get 20 Mounted Kills against Players",
+    "s3": "Dread Plague — Get 2 Player Kills within 5 Seconds 20 times"
+   }
+  },
+  {
+   "id": "pi-krait-p68",
+   "name": "KRAIT P68",
+   "cls": "pi",
+   "challenges": {
+    "s1": "Off Grid — Get 15 Player Kills while Ledge Hanging",
+    "s2": "Urban Flamingo — Get 15 Point Blank Kills against Players",
+    "s3": "Smokescreen — Get 50 Player Kills while using a Silencer"
+   }
+  },
+  {
+   "id": "pi-50-gs",
+   "name": ".50 GS",
+   "cls": "pi",
+   "challenges": {
+    "s1": "Frosted — Get 20 Headshot Kills against Players",
+    "s2": "Splatter Ops — Get 7 Double Kills against Players",
+    "s3": "Red Tiger — Get 30 Point Blank Kills against Players"
+   }
+  },
+  {
+   "id": "pi-mojave-357",
+   "name": "MOJAVE .357",
+   "cls": "pi",
+   "challenges": {
+    "s1": "Miami — Get 20 Headshot Kills against Players",
+    "s2": "Wallpaper — Get 7 Double Kills against Players",
+    "s3": "Garland — Get 30 Point Blank Kills against Players"
+   }
+  },
+  {
+   "id": "pi-sang-9mm",
+   "name": "SANG 9mm",
+   "cls": "pi",
+   "challenges": {
+    "s1": "Autumn — Get 25 Player Kills while Aiming Down Sights",
+    "s2": "Snakeskin — Get 50 Player Kills while using Akimbo",
+    "s3": "Space Time — Get 3 Player Kills without dying 5 times"
+   }
+  },
+  {
+   "id": "la-pm-40-anvil",
+   "name": "PM-40 ANVIL",
+   "cls": "la",
+   "challenges": {
+    "s1": "Night Snow — Get 10 Direct Shot Kills against Players",
+    "s2": "Recursive — Get 5 Double Kills against Players",
+    "s3": "Urban Standard — Destroy 30 Killstreaks or Vehicles"
+   }
+  },
+  {
+   "id": "la-rpg-8",
+   "name": "RPG 8",
+   "cls": "la",
+   "challenges": {
+    "s1": "Digi Bark — Get 10 Direct Shot Kills against Players",
+    "s2": "Stone Bits — Get 5 Double Kills against Players",
+    "s3": "Bubblegum Ops — Destroy 30 Killstreaks or Vehicles"
+   }
+  },
+  {
+   "id": "la-jokr",
+   "name": "JOKR",
+   "cls": "la",
+   "challenges": {
+    "s1": "Thicket — Get 10 Direct Shot Kills against Players",
+    "s2": "Tectonic — Get 5 Double Kills against Players",
+    "s3": "Blue Tiger — Destroy 30 Killstreaks or Vehicles"
+   }
+  },
+  {
+   "id": "la-pila",
+   "name": "PILA",
+   "cls": "la",
+   "challenges": {
+    "s1": "Frontier — Get 10 Direct Shot Kills against Players",
+    "s2": "Sandwash — Get 5 Double Kills against Players",
+    "s3": "Digital Fall — Destroy 30 Killstreaks or Vehicles"
+   }
+  },
+  {
+   "id": "me-fss-carbon-edge-1095",
+   "name": "FSS Carbon Edge 1095",
+   "cls": "me",
+   "challenges": {
+    "s1": "Raster Lite — Get 100 Enemy Kills while Jumping",
+    "s2": "Stockpile — Get 75 Enemy Kills using the Heavy Melee Finisher",
+    "s3": "Deathbed — Get 2 Kills in 5 seconds against Enemies 50 times"
+   }
+  }
+ ]
+}

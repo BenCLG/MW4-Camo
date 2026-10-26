@@ -151,7 +151,7 @@ button.cell:active{transform:scale(.97)}
   <header class="top">
     <div>
       <h1 id="title">MW4 <span>Camo Tracker</span></h1>
-      <p class="sub">Tes coches sont sauvegardées dans ce navigateur. Exporte-les pour les partager ou les changer d’appareil.</p>
+      <p class="sub">Tes coches se synchronisent entre vous deux. Sans synchro configurée, elles restent dans ce navigateur (utilise Exporter/Importer).</p>
     </div>
     <div class="status live" id="status"><i></i><span>Sauvegarde locale</span></div>
   </header>
@@ -180,9 +180,11 @@ button.cell:active{transform:scale(.97)}
 
   var DATA=null, players=[], classes=[], steps=[], weapons=[], PER=0, DIV_AT=33;
   var progress={}, me="", filterCls="all", q="", toastTimer=null;
+  var SYNC=null, syncOn=false, pending=[], busy=false, firstPull=true, pollTimer=null;
 
   function $(s){return document.querySelector(s);}
   function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c];});}
+  function setStatus(kind,text){var el=$("#status");el.className="status "+kind;el.querySelector("span").textContent=text;}
   function toast(msg){var t=$("#toast");t.textContent=msg;t.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(function(){t.hidden=true;},3200);}
 
   /* ---------- stockage local ---------- */
@@ -290,7 +292,7 @@ button.cell:active{transform:scale(.97)}
             Object.keys(inc[wid][pid]||{}).forEach(function(k){
               if(inc[wid][pid][k]===true&&!pv(wid,pid)[k]){
                 progress[wid]=progress[wid]||{};progress[wid][pid]=progress[wid][pid]||{};
-                progress[wid][pid][k]=true;added++;
+                progress[wid][pid][k]=true;added++;queueChange(pid,wid,k,true);
               }
             });
           });
@@ -302,6 +304,92 @@ button.cell:active{transform:scale(.97)}
     r.readAsText(file);
   }
 
+
+  /* ---------- synchro Supabase (optionnelle, voir data.json > sync) ---------- */
+  function headers(extra){
+    var h={apikey:SYNC.anonKey,"Content-Type":"application/json"};
+    if(String(SYNC.anonKey).indexOf("eyJ")===0)h.Authorization="Bearer "+SYNC.anonKey;
+    for(var k in (extra||{}))h[k]=extra[k];
+    return h;
+  }
+  function base(){return String(SYNC.url).replace(/\/+$/,"")+"/rest/v1/sheets";}
+  function getRows(){
+    return fetch(base()+"?room=eq."+encodeURIComponent(SYNC.room)+"&select=player,data",{headers:headers(),cache:"no-store"})
+      .then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();});
+  }
+  function putRow(pid,data){
+    return fetch(base()+"?on_conflict=room,player",{method:"POST",
+      headers:headers({Prefer:"resolution=merge-duplicates,return=minimal"}),
+      body:JSON.stringify({room:SYNC.room,player:pid,data:data,updated_at:new Date().toISOString()})})
+      .then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);});
+  }
+  function applyRows(rows){
+    var seen={};
+    rows.forEach(function(r){seen[r.player]=true;});
+    players.forEach(function(p){
+      Object.keys(progress).forEach(function(wid){if(progress[wid]&&progress[wid][p.id]&&seen[p.id])delete progress[wid][p.id];});
+    });
+    rows.forEach(function(r){
+      Object.keys(r.data||{}).forEach(function(wid){
+        progress[wid]=progress[wid]||{};progress[wid][r.player]=Object.assign({},r.data[wid]);
+      });
+    });
+    saveProgress();
+  }
+  function queueChange(pid,wid,key,val){
+    if(!syncOn)return;
+    pending.push({pid:pid,wid:wid,key:key,val:val});
+    flush();
+  }
+  function flush(){
+    if(busy||!pending.length)return;
+    busy=true;
+    var batch=pending.splice(0,pending.length);
+    getRows().then(function(rows){
+      var byP={};rows.forEach(function(r){byP[r.player]=r.data||{};});
+      var touched={};
+      batch.forEach(function(c){
+        var d=byP[c.pid]=byP[c.pid]||{};touched[c.pid]=true;
+        if(c.val){d[c.wid]=d[c.wid]||{};d[c.wid][c.key]=true;}
+        else if(d[c.wid]){delete d[c.wid][c.key];if(!Object.keys(d[c.wid]).length)delete d[c.wid];}
+      });
+      return Promise.all(Object.keys(touched).map(function(pid){return putRow(pid,byP[pid]);}));
+    }).then(function(){busy=false;setStatus("live","Synchronisé");if(pending.length)flush();})
+    .catch(function(){
+      busy=false;pending=batch.concat(pending);
+      setStatus("err","Hors ligne — nouvelle tentative…");
+      setTimeout(flush,5000);
+    });
+  }
+  function pull(){
+    if(busy||pending.length)return Promise.resolve();
+    return getRows().then(function(rows){
+      if(busy||pending.length)return;
+      if(firstPull){
+        firstPull=false;
+        // premier lancement: envoie ce qui est déjà coché localement mais absent du serveur
+        var have={};rows.forEach(function(r){have[r.player]=r.data||{};});
+        players.forEach(function(p){
+          weapons.forEach(function(w){
+            var v=pv(w.id,p.id);
+            steps.forEach(function(s){
+              if(v[s.key]&&!(have[p.id]&&have[p.id][w.id]&&have[p.id][w.id][s.key]))queueChange(p.id,w.id,s.key,true);
+            });
+          });
+        });
+        if(pending.length){return;}
+      }
+      applyRows(rows);renderAll();setStatus("live","Synchronisé");
+    }).catch(function(){setStatus("err","Hors ligne — nouvelle tentative…");});
+  }
+  function startSync(){
+    setStatus("","Connexion…");
+    pull();
+    clearInterval(pollTimer);
+    pollTimer=setInterval(pull,(SYNC.pollSeconds||5)*1000);
+    document.addEventListener("visibilitychange",function(){if(!document.hidden)pull();});
+  }
+
   /* ---------- événements ---------- */
   document.addEventListener("click",function(e){
     var t=e.target.closest("[data-act]");if(!t)return;
@@ -309,7 +397,7 @@ button.cell:active{transform:scale(.97)}
     if(a==="tog"){
       var w=t.dataset.w,k=t.dataset.k,cur=!!pv(w,me)[k];
       progress[w]=progress[w]||{};progress[w][me]=Object.assign({},progress[w][me]||{});progress[w][me][k]=!cur;
-      saveProgress();renderStats();renderGrid();
+      saveProgress();renderStats();renderGrid();queueChange(me,w,k,!cur);
     }else if(a==="player"){
       me=t.dataset.p;try{localStorage.setItem(MEKEY,me);}catch(x){}renderAll();
     }else if(a==="cls"){filterCls=t.dataset.c;renderChips();renderGrid();}
@@ -332,9 +420,12 @@ button.cell:active{transform:scale(.97)}
     if(d.title)document.title=d.title;
     $("#foot").textContent="Défis : version multijoueur (sources : CODMunity et MW4.GG). Les camos militaires viennent du niveau d’arme et ne sont pas suivis ici. La Divergence se débloque automatiquement après "+DIV_AT+" Harmonic Break.";
     loadProgress();
+    SYNC=d.sync||{};
+    syncOn=!!(SYNC.url&&SYNC.anonKey&&SYNC.room);
     try{me=localStorage.getItem(MEKEY)||"";}catch(e){}
     if(!player(me))me=players[0].id;
     renderAll();
+    if(syncOn){startSync();}else{setStatus("live","Sauvegarde locale");}
   }).catch(function(){
     $("#grid").innerHTML='<div class="empty"><h3>data.json introuvable</h3>Ouvre la page depuis un serveur (hébergement, ou <code>python -m http.server</code> en local). Un double-clic sur le fichier ne marche pas, le navigateur bloque la lecture de data.json.</div>';
   });
